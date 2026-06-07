@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import Navbar from "../components/layout/Navbar";
 
 import { useTestStore } from "../store/testStore";
@@ -5,10 +7,14 @@ import { useTestStore } from "../store/testStore";
 import toast from "react-hot-toast";
 
 export default function PreviewPage() {
+  const navigate = useNavigate();
+
   const { testData, questions } = useTestStore();
 
   const handlePublish = () => {
     toast.success("Test Published");
+
+    navigate("/dashboard");
   };
 
   return (
