@@ -32,7 +32,7 @@ A React + TypeScript web application built for the Preproute Frontend Developer 
 
 https://preproute-test-management-seven.vercel.app/login
 
-## GitHub Repository
+## Repository
 
 https://github.com/Nihal-Reddy-K/preproute-test-management
 ```
