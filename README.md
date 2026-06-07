@@ -30,7 +30,7 @@ A React + TypeScript web application built for the Preproute Frontend Developer 
 
 ## Live Demo
 
-https://preproute-test-management-seven.vercel.app/login
+https://preproute-test-management-seven.vercel.app
 
 ## Repository
 
