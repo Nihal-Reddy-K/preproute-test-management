@@ -56,7 +56,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => {
-                setTestData(null); // Clear previous creation cache
+                setTestData(null);
                 navigate("/tests/create");
               }}
               className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-semibold shadow-sm cursor-pointer"

@@ -1,6 +1,6 @@
 export interface Question {
   id?: number | string;
-  type: string; // e.g. "mcq"
+  type: string;
   question: string;
   option1: string;
   option2: string;

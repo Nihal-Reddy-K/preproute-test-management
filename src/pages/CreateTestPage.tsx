@@ -143,7 +143,7 @@ export default function CreateTestPage() {
           name: t.name || t.title || t.topicName || ""
         })).filter((t: any) => t.id);
         setTopicsList(formatted);
-        setValue("topics", []); // reset topics on subject change
+        setValue("topics", []);
       } catch (err: any) {
         console.error("Failed to load topics:", err);
       }
