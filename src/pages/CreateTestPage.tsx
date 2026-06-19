@@ -49,10 +49,12 @@ const mapUIToBackend = (uiData: any) => {
   } else if (uiData.difficulty === "difficult") {
     backendDifficulty = "hard";
   }
+  const { sub_topics, ...rest } = uiData;
   return {
-    ...uiData,
+    ...rest,
     type: backendType,
-    difficulty: backendDifficulty
+    difficulty: backendDifficulty,
+    sub_topic: sub_topics // map array to backend field
   };
 };
 
