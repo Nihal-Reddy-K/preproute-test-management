@@ -44,8 +44,8 @@ export default function QuestionsPage() {
           correct_option: "option1",
           explanation: "",
           difficulty: data.difficulty || "easy",
-          topic: data.topics?.[0] || "",
-          subtopic: data.sub_topics?.[0] || "",
+          topic: "",
+          subtopic: "",
         }));
         setQuestions(initialQuestions);
       } catch (err: any) {
@@ -64,8 +64,8 @@ export default function QuestionsPage() {
             correct_option: "option1",
             explanation: "",
             difficulty: testData.difficulty || "easy",
-            topic: testData.topics?.[0] || "",
-            subtopic: testData.sub_topics?.[0] || "",
+            topic: "",
+            subtopic: "",
           }));
           setQuestions(initialQuestions);
         } else {
@@ -136,8 +136,8 @@ export default function QuestionsPage() {
           correct_option: q.correct_option || "option1",
           explanation: q.explanation || "",
           difficulty: q.difficulty || test?.difficulty || "easy",
-          topic: q.topic || test?.topics?.[0] || "",
-          subtopic: q.subtopic || test?.sub_topics?.[0] || "",
+          topic: q.topic || "",
+          sub_topic: q.subtopic || "",
           media_url: "",
           test_id: id
         }))
