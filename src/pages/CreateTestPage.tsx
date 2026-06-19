@@ -9,10 +9,52 @@ import {
   getSubjects,
   getTopicsBySubject,
   getSubtopicsByTopics,
-  createTest
+  createTest,
+  updateTest
 } from "../services/testService";
 import { useTestStore } from "../store/testStore";
 import toast from "react-hot-toast";
+
+const mapBackendToUI = (test: any) => {
+  if (!test) return null;
+  let uiType: "Chapter Wise" | "PYQ" | "Mock Test" = "Chapter Wise";
+  if (test.type === "pyq") {
+    uiType = "PYQ";
+  } else if (test.type === "mock") {
+    uiType = "Mock Test";
+  }
+  let uiDifficulty: "easy" | "medium" | "difficult" = "easy";
+  if (test.difficulty === "medium") {
+    uiDifficulty = "medium";
+  } else if (test.difficulty === "hard") {
+    uiDifficulty = "difficult";
+  }
+  return {
+    ...test,
+    type: uiType,
+    difficulty: uiDifficulty
+  };
+};
+
+const mapUIToBackend = (uiData: any) => {
+  let backendType = "chapterwise";
+  if (uiData.type === "PYQ") {
+    backendType = "pyq";
+  } else if (uiData.type === "Mock Test") {
+    backendType = "mock";
+  }
+  let backendDifficulty = "easy";
+  if (uiData.difficulty === "medium") {
+    backendDifficulty = "medium";
+  } else if (uiData.difficulty === "difficult") {
+    backendDifficulty = "hard";
+  }
+  return {
+    ...uiData,
+    type: backendType,
+    difficulty: backendDifficulty
+  };
+};
 
 export default function CreateTestPage() {
   const navigate = useNavigate();
@@ -24,8 +66,10 @@ export default function CreateTestPage() {
 
   const [loadingSubjects, setLoadingSubjects] = useState(false);
 
+  const mappedTestData = mapBackendToUI(testData);
+
   const [activeType, setActiveType] = useState<"Chapter Wise" | "PYQ" | "Mock Test">(
-    testData?.type || "Chapter Wise"
+    mappedTestData?.type || "Chapter Wise"
   );
 
   const [topicDropdownOpen, setTopicDropdownOpen] = useState(false);
@@ -41,18 +85,18 @@ export default function CreateTestPage() {
   } = useForm<TestSchemaType>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      name: testData?.name || "",
-      type: testData?.type || "Chapter Wise",
-      subject: testData?.subject || "",
-      topics: testData?.topics || [],
-      sub_topics: testData?.sub_topics || [],
-      correct_marks: testData?.correct_marks ?? 5,
-      wrong_marks: testData?.wrong_marks ?? -1,
-      unattempt_marks: testData?.unattempt_marks ?? 0,
-      difficulty: testData?.difficulty || "easy",
-      total_time: testData?.total_time || 60,
-      total_questions: testData?.total_questions || 50,
-      total_marks: testData?.total_marks || 250,
+      name: mappedTestData?.name || "",
+      type: mappedTestData?.type || "Chapter Wise",
+      subject: mappedTestData?.subject || "",
+      topics: mappedTestData?.topics || [],
+      sub_topics: mappedTestData?.sub_topics || [],
+      correct_marks: mappedTestData?.correct_marks ?? 5,
+      wrong_marks: mappedTestData?.wrong_marks ?? -1,
+      unattempt_marks: mappedTestData?.unattempt_marks ?? 0,
+      difficulty: mappedTestData?.difficulty || "easy",
+      total_time: mappedTestData?.total_time || 60,
+      total_questions: mappedTestData?.total_questions || 50,
+      total_marks: mappedTestData?.total_marks || 250,
     }
   });
 
@@ -142,19 +186,25 @@ export default function CreateTestPage() {
   const onSubmit = async (data: TestSchemaType) => {
     try {
       const payload = {
-        ...data,
+        ...mapUIToBackend(data),
         status: "draft"
       };
 
-      const response = await createTest(payload);
+      let response;
+      if (testData?.id || testData?._id) {
+        const id = testData.id || testData._id;
+        response = await updateTest(id, payload);
+      } else {
+        response = await createTest(payload);
+      }
       const testId = response.data?.id || response.data?._id || response.id || response._id || "1";
 
-      setTestData(payload);
+      setTestData({ ...payload, id: testId });
 
-      toast.success("Test created successfully");
+      toast.success("Test saved successfully");
       navigate(`/tests/${testId}/questions`);
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Failed to create test";
+      const errorMsg = error.response?.data?.message || "Failed to save test";
       toast.error(errorMsg);
       console.error(error);
     }
