@@ -72,6 +72,7 @@ export default function CreateTestPage() {
     mappedTestData?.type || "Chapter Wise"
   );
 
+  const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
   const [topicDropdownOpen, setTopicDropdownOpen] = useState(false);
   const [subtopicDropdownOpen, setSubtopicDropdownOpen] = useState(false);
 
@@ -249,22 +250,56 @@ export default function CreateTestPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              <div>
+              <div className="relative">
                 <label className="block text-slate-700 font-medium mb-2 text-sm">Subject</label>
-                <select
-                  {...register("subject")}
-                  className={`w-full h-12 px-4 rounded-xl border ${
+                <input type="hidden" {...register("subject")} />
+                <div
+                  onClick={() =>
+                    !loadingSubjects && (
+                      setSubjectDropdownOpen(!subjectDropdownOpen),
+                      setTopicDropdownOpen(false),
+                      setSubtopicDropdownOpen(false)
+                    )
+                  }
+                  className={`w-full h-12 px-4 rounded-xl border flex items-center justify-between cursor-pointer ${
                     errors.subject ? "border-red-400" : "border-slate-200"
-                  } bg-white outline-none focus:border-blue-500 transition`}
-                  disabled={loadingSubjects}
+                  } bg-white ${loadingSubjects ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  <option value="">Choose from Drop-down</option>
-                  {subjectsList.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </option>
-                  ))}
-                </select>
+                  <span className="text-slate-500 truncate text-sm">
+                    {selectedSubject
+                      ? subjectsList.find((s) => s.id === selectedSubject)?.name || selectedSubject
+                      : "Choose from Drop-down"}
+                  </span>
+                  <span className="text-slate-400">▼</span>
+                </div>
+                {subjectDropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-20 p-2 space-y-1">
+                    {subjectsList.length === 0 ? (
+                      <div className="p-3 text-sm text-slate-400 text-center">
+                        No subjects found
+                      </div>
+                    ) : (
+                      subjectsList.map((sub) => {
+                        const isSelected = selectedSubject === sub.id;
+                        return (
+                          <div
+                            key={sub.id}
+                            onClick={() => {
+                              setValue("subject", sub.id);
+                              setSubjectDropdownOpen(false);
+                            }}
+                            className={`p-2.5 rounded-lg hover:bg-slate-50 cursor-pointer text-sm transition flex justify-between items-center ${
+                              isSelected ? "bg-blue-50 text-blue-600 font-semibold" : "text-slate-700"
+                            }`}
+                          >
+                            <span>{sub.name}</span>
+                            {isSelected && <span className="text-blue-600">✓</span>}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
                 {errors.subject && (
                   <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>
                 )}
@@ -288,7 +323,11 @@ export default function CreateTestPage() {
               <div className="relative">
                 <label className="block text-slate-700 font-medium mb-2 text-sm">Topic</label>
                 <div
-                  onClick={() => setTopicDropdownOpen(!topicDropdownOpen)}
+                  onClick={() => (
+                    setTopicDropdownOpen(!topicDropdownOpen),
+                    setSubjectDropdownOpen(false),
+                    setSubtopicDropdownOpen(false)
+                  )}
                   className={`w-full h-12 px-4 rounded-xl border flex items-center justify-between cursor-pointer ${
                     errors.topics ? "border-red-400" : "border-slate-200"
                   } bg-white`}
@@ -344,7 +383,11 @@ export default function CreateTestPage() {
               <div className="relative">
                 <label className="block text-slate-700 font-medium mb-2 text-sm">Sub Topic</label>
                 <div
-                  onClick={() => setSubtopicDropdownOpen(!subtopicDropdownOpen)}
+                  onClick={() => (
+                    setSubtopicDropdownOpen(!subtopicDropdownOpen),
+                    setSubjectDropdownOpen(false),
+                    setTopicDropdownOpen(false)
+                  )}
                   className="w-full h-12 px-4 rounded-xl border flex items-center justify-between cursor-pointer border-slate-200 bg-white"
                 >
                   <span className="text-slate-500 truncate text-sm">
